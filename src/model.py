@@ -8,7 +8,13 @@ class ProteinModel(nn.Module):
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(256, 1)
 
-    def forward(self, x):
+    def forward(self, data: dict):
+        """
+        :param data: Dictionary containing ['embedding', 'mutant', 'mutant_sequence',
+                                                'logits', 'wt_logits', 'wt_embedding']
+        :return: predicted DMS score
+        """
+        x = data['embedding']
         x = self.fc1(x)
         x = self.relu(x)
         x = torch.sum(x, dim=1)

@@ -25,8 +25,8 @@ if __name__ == "__main__":
         experiments = os.listdir('eval_files/')
     for experiment in experiments:
         try:
-            root_dir = 'eval_files/' + experiment.replace('.tar.gz', '')
-            new_row = train_main(root_dir=root_dir, plot=False)
+            experiment_path = 'eval_files/' + experiment.replace('.tar.gz', '')
+            new_row = train_main(experiment_path=experiment_path, plot=False)
             rows.append(new_row)
         except Exception as e:
             print(f"Error with {experiment}: {e}")
