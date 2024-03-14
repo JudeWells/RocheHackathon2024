@@ -26,7 +26,7 @@ def plot_metrics(metrics, title='Training Metrics'):
     fig.suptitle(title)
     save_path = f'{OUT_DIR}/{title}.png'
     plt.savefig(save_path)
-    print(f"Saved plot of to {save_path}")
+    print(f"Saved plot of to {os.getcwd()}/{save_path}")
     plt.show()
 
 
@@ -37,7 +37,7 @@ def get_performance_metrics(predictions, actuals):
     spearman = spearmanr(actuals, predictions)
     return {'mse': mse, 'mae': mae, 'r2': r2, 'spearman_r': spearman.correlation}
 
-def train_model(train_loader, root_dir, model, criterion, optimizer, num_epochs=25, plot=False):
+def train_model(train_loader, root_dir, model, criterion, optimizer, num_epochs=10, plot=False):
     train_epoch_metrics = []
     val_epoch_metrics = []
     for epoch in range(num_epochs):
@@ -96,7 +96,7 @@ def main(root_dir = f'{DATA_DIR}/RPC1_LAMBD_Li_2019_high-expression', train_fold
     model = ProteinModel()
     criterion = torch.nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
-    train_model(train_loader, root_dir, model, criterion, optimizer, num_epochs=25, plot=plot)
+    train_model(train_loader, root_dir, model, criterion, optimizer, num_epochs=10, plot=plot)
     metrics = evaluate_model(model, root_dir=root_dir, folds=test_folds, return_logits=False)
     print("Test performance metrics:")
     for k, v in metrics.items():
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     df = pd.DataFrame(rows)
     df_savepath = f'{OUT_DIR}/supervised_results.csv'
     df.to_csv(df_savepath, index=False)
-    print(f"Metrics for {len(df)} experiments saved to {df_savepath}")
+    print(f"Metrics for {len(df)} experiments saved to {os.getcwd()}/{df_savepath}")
     print(df.head())
     end = time.time()
     print(f"Total time: {(end-start)/60:.2f} minutes")
