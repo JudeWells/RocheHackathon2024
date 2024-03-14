@@ -13,7 +13,9 @@ import matplotlib.pyplot as plt
 
 from src.data_loader import get_dataloader
 from src.model import ProteinModel
-
+DATA_DIR = '../data'
+OUT_DIR = '../outputs'
+os.makedirs(OUT_DIR, exist_ok=True)
 def plot_metrics(metrics, title='Training Metrics'):
     fig, axs = plt.subplots(2, 2, figsize=(10, 10))
     for i, (k, v) in enumerate(metrics[0].items()):
@@ -22,6 +24,9 @@ def plot_metrics(metrics, title='Training Metrics'):
         ax.set_title(k)
     # add sup title
     fig.suptitle(title)
+    save_path = f'{OUT_DIR}/{title}.png'
+    plt.savefig(save_path)
+    print(f"Saved plot of to {save_path}")
     plt.show()
 
 
@@ -65,7 +70,7 @@ def train_model(train_loader, root_dir, model, criterion, optimizer, num_epochs=
         plot_metrics(val_epoch_metrics, title='Validation Metrics')
 
 
-def evaluate_model(model, root_dir='eval_files/RPC1_LAMBD_Li_2019_high-expression', folds=[5], return_logits=False):
+def evaluate_model(model, root_dir=f'{DATA_DIR}/RPC1_LAMBD_Li_2019_high-expression', folds=[5], return_logits=False):
     test_loader = get_dataloader(root_dir=root_dir, folds=folds, return_logits=return_logits)
     model.eval()
     predictions = []
@@ -80,11 +85,11 @@ def evaluate_model(model, root_dir='eval_files/RPC1_LAMBD_Li_2019_high-expressio
     metrics = get_performance_metrics(predictions, actuals)
     return metrics
 
-def main(root_dir = 'eval_files/RPC1_LAMBD_Li_2019_high-expression', train_folds=[1,2,3,4], test_folds=[5], plot=True):
+def main(root_dir = f'{DATA_DIR}/RPC1_LAMBD_Li_2019_high-expression', train_folds=[1,2,3,4], test_folds=[5], plot=True):
     print(f"\nTraining model on {root_dir}")
     if not os.path.isdir(root_dir):
         if os.path.exists(f'{root_dir}.tar.gz'):
-            os.system(f'tar -xzf {root_dir}.tar.gz -C eval_files/')
+            os.system(f'tar -xzf {root_dir}.tar.gz -C {DATA_DIR}/')
         else:
             raise Exception(f'Could not find {root_dir} or {root_dir}.tar.gz')
     train_loader = get_dataloader(root_dir=root_dir, folds=train_folds, return_logits=True, return_wt=True)
@@ -107,18 +112,19 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         experiments = sys.argv[1].split(',')
     else:
-        experiments = os.listdir('eval_files/')
+        experiments = list(set([fname.split('.')[0] for fname in os.listdir(DATA_DIR)]))
     for experiment in experiments:
         try:
-            root_dir = 'eval_files/' + experiment.replace('.tar.gz', '')
+            root_dir = f"{DATA_DIR}/{experiment}"
             new_row = main(root_dir=root_dir)
             rows.append(new_row)
         except Exception as e:
             print(f"Error with {experiment}: {e}")
             continue
     df = pd.DataFrame(rows)
-    df.to_csv('supervised_results.csv', index=False)
-    print(f"Metrics for {len(df)} experiments saved to supervised_results.csv")
+    df_savepath = f'{OUT_DIR}/supervised_results.csv'
+    df.to_csv(df_savepath, index=False)
+    print(f"Metrics for {len(df)} experiments saved to {df_savepath}")
     print(df.head())
     end = time.time()
     print(f"Total time: {(end-start)/60:.2f} minutes")
