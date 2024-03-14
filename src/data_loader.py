@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from src.utils.add_modulo_fold import assign_fold
+from utils.add_modulo_fold import assign_fold
 
 class ProteinDataset(Dataset):
     def __init__(self, csv_file, root_dir, folds, transform=None, return_logits=False, return_wt=False):
