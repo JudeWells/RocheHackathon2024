@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 from data_loader import get_dataloader
 from model import ProteinModel
-DATA_DIR = '../data'
-OUT_DIR = '../outputs'
+DATA_DIR = './data'
+OUT_DIR = './outputs'
 os.makedirs(OUT_DIR, exist_ok=True)
 def plot_metrics(metrics, title='Training Metrics'):
     fig, axs = plt.subplots(2, 2, figsize=(10, 10))
