@@ -59,7 +59,7 @@ class ProteinDataset(Dataset):
 
         return sample
 
-def get_dataloader(experiment_path, folds, batch_size=32, shuffle=True, return_logits=False, return_wt=False):
+def get_dataloader(experiment_path, folds, batch_size=32, shuffle=True, return_logits=True, return_wt=True):
     experiment_path = experiment_path.replace('.tar.gz', '')
     if not os.path.isdir(experiment_path):
         if os.path.exists(f'{experiment_path}.tar.gz'):
