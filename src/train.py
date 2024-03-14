@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from data_loader import get_dataloader
 from model import ProteinModel
 DATA_DIR = 'data'
-DATA_DIR = '../training_set_embeddings'
 OUT_DIR = 'outputs'
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -111,7 +110,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         experiments = sys.argv[1].split(',')
     else:
-        experiments = list(set([fname.split('.')[0] for fname in os.listdir(DATA_DIR)]))
+        experiments = list(set([fname.split('.')[0] for fname in os.listdir(DATA_DIR) if not fname.startswith('.')]))
     for experiment in experiments:
         try:
             experiment_path = f"{DATA_DIR}/{experiment}"
