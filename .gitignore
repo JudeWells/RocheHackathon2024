@@ -7,3 +7,4 @@ data/HUMAN/
 outputs/
 venv_prot/
 *._*
+*.ipynb_checkpoints/
