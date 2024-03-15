@@ -1,4 +1,5 @@
 import glob
+import tarfile
 import torch
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
@@ -64,7 +65,8 @@ def get_dataloader(experiment_path, folds, batch_size=32, shuffle=True, return_l
     if not os.path.isdir(experiment_path):
         if os.path.exists(f'{experiment_path}.tar.gz'):
             tarfile_directory = os.path.dirname(experiment_path)
-            os.system(f'tar -xzf {experiment_path}.tar.gz -C {tarfile_directory}/')
+            with tarfile.open(f'{experiment_path}.tar.gz', 'r') as tar:
+                tar.extractall(path=tarfile_directory)
         else:
             raise Exception(f'Could not find {experiment_path} or {experiment_path}.tar.gz')
     csv_path = glob.glob(f"{experiment_path}/*.csv")[0]

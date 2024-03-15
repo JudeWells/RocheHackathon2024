@@ -38,7 +38,10 @@ def get_performance_metrics(predictions, actuals):
     spearman = spearmanr(actuals, predictions)
     return {'mse': mse, 'mae': mae, 'r2': r2, 'spearman_r': spearman.correlation}
 
-def train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs=10, plot=False):
+def train_model(model, train_loader, validation_loader, plot=False):
+    num_epochs = 10
+    criterion = torch.nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
     train_epoch_metrics = []
     val_epoch_metrics = []
     for epoch in range(num_epochs):
@@ -89,10 +92,8 @@ def main(experiment_path = f'{DATA_DIR}/RPC1_LAMBD_Li_2019_high-expression', tra
     val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
     test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
     model = ProteinModel()
-    criterion = torch.nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
     start = time.time()
-    train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=10, plot=plot)
+    train_model(model, train_loader, val_loader, plot=plot)
     train_time = time.time() - start
     metrics = evaluate_model(model, test_loader)
     metrics['train_time_secs'] = round(train_time, 1)
