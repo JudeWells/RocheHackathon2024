@@ -5,7 +5,8 @@
 git clone git@github.com:JudeWells/RocheHackathon2024.git
 cd RocheHackathon2024
 ```
-Directory structure should look like this:
+Move the downloaded datasets to the data folder in the project directory.
+Directory structure should look something like this:
 ```
 └ RochHackathon2024
     ├── README.md
