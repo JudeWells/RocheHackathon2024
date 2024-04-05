@@ -86,7 +86,7 @@ def evaluate_model(model, test_loader):
     metrics = get_performance_metrics(predictions, actuals)
     return metrics
 
-def main(experiment_path = f'{DATA_DIR}/RPC1_LAMBD_Li_2019_high-expression', train_folds=[1,2,3], validation_folds=[4], test_folds=[5], plot=True):
+def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=[5], plot=True):
     print(f"\nTraining model on {experiment_path}")
     train_loader = get_dataloader(experiment_path=experiment_path, folds=train_folds, return_logits=True, return_wt=True)
     val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
