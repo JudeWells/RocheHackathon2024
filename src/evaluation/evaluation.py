@@ -11,10 +11,32 @@ import time
 # supress pandas deprication warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 import pandas as pd
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from scipy.stats import spearmanr
 
-from src.train import train_model, evaluate_model
+from src.train import train_model
 from src.data_loader import get_dataloader
 from src.model import ProteinModel
+import torch
+
+def test_get_performance_metrics(predictions, actuals):
+    mse = mean_squared_error(actuals, predictions)
+    mae = mean_absolute_error(actuals, predictions)
+    r2 = r2_score(actuals, predictions)
+    spearman = spearmanr(actuals, predictions)
+    return {'mse': mse, 'mae': mae, 'r2': r2, 'spearman_r': spearman.correlation}
+def test_evaluate_model(model, test_loader):
+    model.eval()
+    predictions = []
+    actuals = []
+    with torch.no_grad():
+        for data in test_loader:
+            labels = data['DMS_score']
+            outputs = model(data)
+            predictions.extend(outputs.numpy())
+            actuals.extend(labels.numpy())
+    metrics = test_get_performance_metrics(predictions, actuals)
+    return metrics
 
 def get_random_folds(experiment_name):
     """
@@ -61,8 +83,8 @@ if __name__ == "__main__":
             test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
             model = ProteinModel()
             start = time.time()
-            train_model(model, train_loader, val_loader, plot=False)
-            test_metrics = evaluate_model(model, test_loader)
+            train_model(model, train_loader, val_loader)
+            test_metrics = test_evaluate_model(model, test_loader)
             train_eval_time = time.time() - start
             test_metrics['DMS_id'] = experiment
             test_metrics['train_and_eval_time_secs'] = round(train_eval_time, 1)

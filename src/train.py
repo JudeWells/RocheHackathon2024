@@ -30,6 +30,18 @@ def plot_metrics(metrics, title='Training Metrics'):
     print(f"Saved plot of to {os.getcwd()}/{save_path}")
     plt.show()
 
+def evaluate_model(model, test_loader):
+    model.eval()
+    predictions = []
+    actuals = []
+    with torch.no_grad():
+        for data in test_loader:
+            labels = data['DMS_score']
+            outputs = model(data)
+            predictions.extend(outputs.numpy())
+            actuals.extend(labels.numpy())
+    metrics = get_performance_metrics(predictions, actuals)
+    return metrics
 
 def get_performance_metrics(predictions, actuals):
     mse = mean_squared_error(actuals, predictions)
@@ -72,19 +84,6 @@ def train_model(model, train_loader, validation_loader, plot=False):
         plot_metrics(train_epoch_metrics, title='Training Metrics')
         plot_metrics(val_epoch_metrics, title='Validation Metrics')
 
-
-def evaluate_model(model, test_loader):
-    model.eval()
-    predictions = []
-    actuals = []
-    with torch.no_grad():
-        for data in test_loader:
-            labels = data['DMS_score']
-            outputs = model(data)
-            predictions.extend(outputs.numpy())
-            actuals.extend(labels.numpy())
-    metrics = get_performance_metrics(predictions, actuals)
-    return metrics
 
 def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=[5], plot=True):
     print(f"\nTraining model on {experiment_path}")
