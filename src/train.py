@@ -10,9 +10,13 @@ import torch.optim as optim
 from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
+try:
+    from src.data_loader import get_dataloader
+    from src.model import ProteinModel
+except:
+    from data_loader import get_dataloader
+    from model import ProteinModel
 
-from src.data_loader import get_dataloader
-from src.model import ProteinModel
 DATA_DIR = 'data'
 OUT_DIR = 'outputs'
 os.makedirs(OUT_DIR, exist_ok=True)
