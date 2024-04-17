@@ -5,8 +5,10 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import numpy as np
 import os
-
-from utils.add_modulo_fold import assign_fold
+try:
+    from utils.add_modulo_fold import assign_fold
+except:
+    from src.utils.add_modulo_fold import assign_fold
 
 class ProteinDataset(Dataset):
     def __init__(self, csv_file, experiment_path, folds, transform=None, return_logits=False, return_wt=False):
