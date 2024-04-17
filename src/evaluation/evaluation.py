@@ -53,7 +53,7 @@ def get_random_folds(experiment_name):
     """
     folds = [1, 2, 3, 4, 5]
     # Seed the random number generator with the hash of the experiment name
-    seed = sum([ord(c) for c in experiment_name])
+    seed = sum([ord(c) for c in experiment_name]) # convert name into a number
     random.seed(seed)
     # Shuffle the list of folds
     random.shuffle(folds)
