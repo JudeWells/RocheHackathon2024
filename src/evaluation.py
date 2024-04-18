@@ -67,6 +67,8 @@ if __name__ == "__main__":
     start = time.time()
     rows = []
     eval_directory = '/home/jovyan/shared/judewells/secret-evaluation-data/evaluation_set_embeddings'
+    if not os.path.exists(eval_directory):
+        eval_directory = '../evaluation_set_embeddings'
     # if command line argument provided, use that as the experiment name
     # otherwise, loop over all experiments
     if len(sys.argv) > 1:
