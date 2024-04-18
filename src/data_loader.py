@@ -19,6 +19,7 @@ class ProteinDataset(Dataset):
         self.transform = transform
         self.return_logits = return_logits
         self.return_wt = return_wt
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def add_fold_to_df(self):
         if 'fold' not in self.data_frame.columns:
@@ -33,27 +34,27 @@ class ProteinDataset(Dataset):
         mutant = self.data_frame.iloc[idx, 0]
         embedding_path = os.path.join(self.experiment_path, 'embeddings', mutant + '.npy')
         embedding = np.load(embedding_path)
-        embedding = torch.from_numpy(embedding).float()
+        embedding = torch.from_numpy(embedding).float().to(self.device)
 
         DMS_score = self.data_frame.iloc[idx, 2]
-        DMS_score = torch.tensor(DMS_score).float()
+        DMS_score = torch.tensor(DMS_score).float().to(self.device)
         mutant_sequence = self.data_frame.iloc[idx, 1]
 
         sample = {'embedding': embedding, 'mutant': mutant, 'DMS_score': DMS_score, 'mutant_sequence': mutant_sequence}
         if self.return_logits:
             logits_path = os.path.join(self.experiment_path, 'logits', mutant + '.npy')
             logits = np.load(logits_path)
-            logits = torch.from_numpy(logits).float()
+            logits = torch.from_numpy(logits).float().to(self.device)
             sample['logits'] = logits
             if self.return_wt:
                 wt_logits_path = os.path.join(self.experiment_path, 'logits', 'wt.npy')
                 wt_logits = np.load(wt_logits_path)
-                wt_logits = torch.from_numpy(wt_logits).float()
+                wt_logits = torch.from_numpy(wt_logits).float().to(self.device)
                 sample['wt_logits'] = wt_logits
         if self.return_wt:
             wt_embedding_path = os.path.join(self.experiment_path, 'embeddings', 'wt.npy')
             wt_embedding = np.load(wt_embedding_path)
-            wt_embedding = torch.from_numpy(wt_embedding).float()
+            wt_embedding = torch.from_numpy(wt_embedding).float().to(self.device)
             sample['wt_embedding'] = wt_embedding
 
 
