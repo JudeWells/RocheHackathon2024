@@ -44,6 +44,8 @@ def evaluate_model(model, test_loader):
             outputs = model(data)
             predictions.extend(outputs.numpy())
             actuals.extend(labels.numpy())
+    assert len(predictions) == len(actuals)
+    print('len preds:', len(predictions), len('actuals'), len(actuals))
     metrics = get_performance_metrics(predictions, actuals)
     return metrics
 
@@ -89,20 +91,23 @@ def train_model(model, train_loader, validation_loader, plot=False):
         plot_metrics(val_epoch_metrics, title='Validation Metrics')
 
 
-def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=[5], plot=True):
+def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=[5], plot=False):
     print(f"\nTraining model on {experiment_path}")
     train_loader = get_dataloader(experiment_path=experiment_path, folds=train_folds, return_logits=True, return_wt=True)
     val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
     test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
     model = ProteinModel()
     start = time.time()
-    train_model(model, train_loader, val_loader, plot=plot)
+    train_model(model, train_loader, val_loader, test_loader, plot=plot)
     train_time = time.time() - start
     metrics = evaluate_model(model, test_loader)
     metrics['train_time_secs'] = round(train_time, 1)
     print("Test performance metrics:")
     for k, v in metrics.items():
         print(f"{k}: {v:.4f}")
+    val_metrics = evaluate_model(model, val_loader)
+    for k, v in val_metrics.items():
+        print(f"Validation {k}: {v:.4f}")
     metrics['DMS_id'] = experiment_path.split('/')[-1]
     return metrics
 

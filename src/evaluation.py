@@ -33,8 +33,8 @@ def test_evaluate_model(model, test_loader):
         for data in test_loader:
             labels = data['DMS_score']
             outputs = model(data)
-            predictions.extend(outputs.numpy())
-            actuals.extend(labels.numpy())
+            predictions.extend(outputs.detach().cpu().numpy())
+            actuals.extend(labels.detach().cpu().numpy())
     metrics = test_get_performance_metrics(predictions, actuals)
     return metrics
 
@@ -66,7 +66,7 @@ def get_random_folds(experiment_name):
 if __name__ == "__main__":
     start = time.time()
     rows = []
-    eval_directory = './evaluation_set_embeddings'
+    eval_directory = '/home/jovyan/shared/judewells/secret-evaluation-data/evaluation_set_embeddings'
     # if command line argument provided, use that as the experiment name
     # otherwise, loop over all experiments
     if len(sys.argv) > 1:
@@ -81,6 +81,8 @@ if __name__ == "__main__":
                                           return_wt=True)
             val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
             test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
+            print(experiment)
+            print(len(train_loader), len(val_loader), len(test_loader))
             model = ProteinModel()
             start = time.time()
             train_model(model, train_loader, val_loader)
@@ -93,7 +95,7 @@ if __name__ == "__main__":
             print(f"Error with {experiment}: {e}")
             continue
     df = pd.DataFrame(rows)
-    df.to_csv('supervised_results.csv', index=False)
+    df.to_csv('test_supervised_results.csv', index=False)
     print(f"Metrics for {len(df)} experiments saved to supervised_results.csv")
     print(df.head())
     end = time.time()
