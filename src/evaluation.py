@@ -14,9 +14,9 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from scipy.stats import spearmanr
 
-from src.train import train_model
-from src.data_loader import get_dataloader
-from src.model import ProteinModel
+from train import train_model
+from data_loader import get_dataloader
+from model import ProteinModel
 import torch
 
 def test_get_performance_metrics(predictions, actuals):
@@ -66,7 +66,7 @@ def get_random_folds(experiment_name):
 if __name__ == "__main__":
     start = time.time()
     rows = []
-    eval_directory = '../evaluation_set_embeddings'
+    eval_directory = './evaluation_set_embeddings'
     # if command line argument provided, use that as the experiment name
     # otherwise, loop over all experiments
     if len(sys.argv) > 1:
