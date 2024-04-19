@@ -127,7 +127,7 @@ if __name__ == "__main__":
             print(f"Error with {experiment}: {e}")
             continue
         df = pd.DataFrame(rows)
-        df_savepath = f'{OUT_DIR}/LikelihoodRatio.csv'
+        df_savepath = f'{OUT_DIR}/supervised_test_results.csv'
         df.to_csv(df_savepath, index=False)
     print(f"Metrics for {len(df)} experiments saved to {os.getcwd()}/{df_savepath}")
     print(df.head())
