@@ -11,7 +11,7 @@ from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
 from data_loader import get_dataloader
-from model import ProteinModel
+from model import ProteinModel, LikelihoodModel
 
 DATA_DIR = 'data'
 OUT_DIR = 'outputs'
@@ -38,8 +38,8 @@ def evaluate_model(model, test_loader):
         for data in test_loader:
             labels = data['DMS_score']
             outputs = model(data)
-            predictions.extend(outputs.numpy())
-            actuals.extend(labels.numpy())
+            predictions.extend(outputs.detach().cpu().numpy())
+            actuals.extend(labels.detach().cpu().numpy())
     assert len(predictions) == len(actuals)
     print('len preds:', len(predictions), len('actuals'), len(actuals))
     metrics = get_performance_metrics(predictions, actuals)
@@ -67,13 +67,13 @@ def train_model(model, train_loader, validation_loader, plot=False):
             labels = data['DMS_score']
             optimizer.zero_grad()
             outputs = model(data).squeeze()
-            pred_vals.extend(outputs.detach().numpy())
-            true_vals.extend(labels.numpy())
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-
             running_loss += loss.item()
+            pred_vals.extend(outputs.detach().cpu().numpy())
+            true_vals.extend(labels.detach().cpu().numpy())
+
 
         epoch_loss = running_loss / len(train_loader)
         train_metrics = get_performance_metrics(pred_vals, true_vals)
@@ -92,7 +92,8 @@ def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=
     train_loader = get_dataloader(experiment_path=experiment_path, folds=train_folds, return_logits=True, return_wt=True)
     val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
     test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
-    model = ProteinModel()
+    model = LikelihoodModel()
+    model.to('cuda' if torch.cuda.is_available() else 'cpu')
     start = time.time()
     train_model(model, train_loader, val_loader, test_loader, plot=plot)
     train_time = time.time() - start
