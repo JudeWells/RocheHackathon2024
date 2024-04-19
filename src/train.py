@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from data_loader import get_dataloader
 from model import ProteinModel, LikelihoodModel
 
-DATA_DIR = 'data'
+DATA_DIR = '../evaluation_set_embeddings'
 OUT_DIR = 'outputs'
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -95,10 +95,11 @@ def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=
     model = LikelihoodModel()
     model.to('cuda' if torch.cuda.is_available() else 'cpu')
     start = time.time()
-    train_model(model, train_loader, val_loader, test_loader, plot=plot)
-    train_time = time.time() - start
+    # train_model(model, train_loader, val_loader, plot=False)
+    # train_time = time.time() - start
+    # metrics['train_time_secs'] = round(train_time, 1)
     metrics = evaluate_model(model, test_loader)
-    metrics['train_time_secs'] = round(train_time, 1)
+
     print("Test performance metrics:")
     for k, v in metrics.items():
         print(f"{k}: {v:.4f}")
