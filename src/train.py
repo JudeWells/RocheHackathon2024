@@ -53,7 +53,7 @@ def get_performance_metrics(predictions, actuals):
     return {'mse': mse, 'mae': mae, 'r2': r2, 'spearman_r': spearman.correlation}
 
 def train_model(model, train_loader, validation_loader, plot=False):
-    num_epochs = 10
+    num_epochs = 25
     criterion = torch.nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
     train_epoch_metrics = []
@@ -92,13 +92,13 @@ def main(experiment_path, train_folds=[1,2,3], validation_folds=[4], test_folds=
     train_loader = get_dataloader(experiment_path=experiment_path, folds=train_folds, return_logits=True, return_wt=True)
     val_loader = get_dataloader(experiment_path=experiment_path, folds=validation_folds, return_logits=True)
     test_loader = get_dataloader(experiment_path=experiment_path, folds=test_folds, return_logits=True)
-    model = LikelihoodModel()
+    model = ProteinModel()
     model.to('cuda' if torch.cuda.is_available() else 'cpu')
     start = time.time()
-    # train_model(model, train_loader, val_loader, plot=False)
-    # train_time = time.time() - start
-    # metrics['train_time_secs'] = round(train_time, 1)
+    train_model(model, train_loader, val_loader, plot=False)
+    train_time = time.time() - start
     metrics = evaluate_model(model, test_loader)
+    metrics['train_time_secs'] = round(train_time, 1)
 
     print("Test performance metrics:")
     for k, v in metrics.items():
